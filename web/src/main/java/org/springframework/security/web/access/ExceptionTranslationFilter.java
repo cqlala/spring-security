@@ -119,6 +119,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean implements Mes
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		try {
+			// 对前端提交的请求之间执行，不进行拦截
 			chain.doFilter(request, response);
 		}
 		catch (IOException ex) {

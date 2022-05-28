@@ -47,10 +47,13 @@ import org.springframework.util.Assert;
  */
 public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+	// 用户提交的用户名
 	public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
 
+	// 用户提交的密码
 	public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
 
+	// 默认提交路径 /login 和 提交方式 post
 	private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/login",
 			"POST");
 
@@ -72,16 +75,20 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		if (this.postOnly && !request.getMethod().equals("POST")) {
+			// 默认POST请求
 			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 		}
+		// 获取请求携带的usernane和password
 		String username = obtainUsername(request);
 		username = (username != null) ? username.trim() : "";
 		String password = obtainPassword(request);
 		password = (password != null) ? password : "";
+		// 使用前端传入的usernane、password构造Authentication对象，标记该对象未认证。
 		UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
 				password);
 		// Allow subclasses to set the "details" property
 		setDetails(request, authRequest);
+		// 调用ProviderManager类的authenticate()方法进行身份认证
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
 

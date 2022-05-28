@@ -49,9 +49,13 @@ public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationT
 	 *
 	 */
 	public UsernamePasswordAuthenticationToken(Object principal, Object credentials) {
+		// 用户权限为null
 		super(null);
+		// 用户名
 		this.principal = principal;
+		// 密码
 		this.credentials = credentials;
+		// 标记未认证
 		setAuthenticated(false);
 	}
 
@@ -66,9 +70,13 @@ public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationT
 	 */
 	public UsernamePasswordAuthenticationToken(Object principal, Object credentials,
 			Collection<? extends GrantedAuthority> authorities) {
+		// 用户权限集合
 		super(authorities);
+		// 封装认证用户信息的userDetail对象，不再是用户名
 		this.principal = principal;
+		// 密码
 		this.credentials = credentials;
+		// 标记认证成功
 		super.setAuthenticated(true); // must use super, as we override
 	}
 

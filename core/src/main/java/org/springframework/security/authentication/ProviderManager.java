@@ -163,15 +163,18 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 	 */
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		// 获取传入的authentication类型，即UsernamePasswordAuthenticationToken.class
 		Class<? extends Authentication> toTest = authentication.getClass();
 		AuthenticationException lastException = null;
 		AuthenticationException parentException = null;
 		Authentication result = null;
 		Authentication parentResult = null;
 		int currentPosition = 0;
+		// 获取认证方式列表  List<AuthenticationProvider> 大小
 		int size = this.providers.size();
 		for (AuthenticationProvider provider : getProviders()) {
 			if (!provider.supports(toTest)) {
+				// 判断当前AuthenticationProvider是否支持 Authentication的类型
 				continue;
 			}
 			if (logger.isTraceEnabled()) {
@@ -179,8 +182,10 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 						provider.getClass().getSimpleName(), ++currentPosition, size));
 			}
 			try {
+				// 调用认证实现返回已经标记已认证的Authentication对象，符合的为 DaoAuthenticationProvider
 				result = provider.authenticate(authentication);
 				if (result != null) {
+					// 认证完后将传入的authentication对象中的ddetail信息拷贝到已认证的authentication中
 					copyDetails(authentication, result);
 					break;
 				}
@@ -195,6 +200,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 				lastException = ex;
 			}
 		}
+		// 认证失败，使用父类型的AuthenticationManager进行验证
 		if (result == null && this.parent != null) {
 			// Allow the parent to try.
 			try {
@@ -212,6 +218,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 				lastException = ex;
 			}
 		}
+		// 认证成功后，去除result中敏感信息
 		if (result != null) {
 			if (this.eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
 				// Authentication is complete. Remove credentials and other secret data
@@ -223,6 +230,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 			// This check prevents a duplicate AuthenticationSuccessEvent if the parent
 			// AuthenticationManager already published it
 			if (parentResult == null) {
+				// 发布认证成功的事件
 				this.eventPublisher.publishAuthenticationSuccess(result);
 			}
 
@@ -231,6 +239,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 		// Parent was null, or didn't authenticate (or throw an exception).
 		if (lastException == null) {
+			// 认证失败后抛出异常信息
 			lastException = new ProviderNotFoundException(this.messages.getMessage("ProviderManager.providerNotFound",
 					new Object[] { toTest.getName() }, "No AuthenticationProvider found for {0}"));
 		}

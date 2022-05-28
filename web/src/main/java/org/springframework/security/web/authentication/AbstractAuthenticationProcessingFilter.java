@@ -234,6 +234,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 			if (this.continueChainBeforeSuccessfulAuthentication) {
 				chain.doFilter(request, response);
 			}
+			// 认证成功处理
 			successfulAuthentication(request, response, chain, authenticationResult);
 		}
 		catch (InternalAuthenticationServiceException failed) {
@@ -242,6 +243,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 		}
 		catch (AuthenticationException ex) {
 			// Authentication failed
+			// 认证失败处理
 			unsuccessfulAuthentication(request, response, ex);
 		}
 	}
@@ -342,11 +344,14 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 	 */
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
+		// 清理该线程在 SecurityContextHolder 中对应的 SecurityContext对象
 		SecurityContextHolder.clearContext();
 		this.logger.trace("Failed to process authentication request", failed);
 		this.logger.trace("Cleared SecurityContextHolder");
 		this.logger.trace("Handling authentication failure");
+		// rememberMe 处理
 		this.rememberMeServices.loginFail(request, response);
+		// 调用失败处理器
 		this.failureHandler.onAuthenticationFailure(request, response, failed);
 	}
 

@@ -67,6 +67,8 @@ public interface Authentication extends Principal, Serializable {
 	Collection<? extends GrantedAuthority> getAuthorities();
 
 	/**
+	 * 用户密码
+	 *
 	 * The credentials that prove the principal is correct. This is usually a password,
 	 * but could be anything relevant to the <code>AuthenticationManager</code>. Callers
 	 * are expected to populate the credentials.
@@ -83,6 +85,8 @@ public interface Authentication extends Principal, Serializable {
 	Object getDetails();
 
 	/**
+	 * 未认证时为前端传入的用户名，认证后为封装的认证用户信息userDetail对象
+	 *
 	 * The identity of the principal being authenticated. In the case of an authentication
 	 * request with username and password, this would be the username. Callers are
 	 * expected to populate the principal for an authentication request.
@@ -97,6 +101,8 @@ public interface Authentication extends Principal, Serializable {
 	Object getPrincipal();
 
 	/**
+	 * 是否已经认证过
+	 *
 	 * Used to indicate to {@code AbstractSecurityInterceptor} whether it should present
 	 * the authentication token to the <code>AuthenticationManager</code>. Typically an
 	 * <code>AuthenticationManager</code> (or, more often, one of its
@@ -117,6 +123,8 @@ public interface Authentication extends Principal, Serializable {
 	boolean isAuthenticated();
 
 	/**
+	 * 设置是否认证
+	 *
 	 * See {@link #isAuthenticated()} for a full description.
 	 * <p>
 	 * Implementations should <b>always</b> allow this method to be called with a
